@@ -11,6 +11,21 @@ const client: AxiosInstance = Axios.create({
 		requesttoken: getRequestToken()
 	}
 })
+// [VWORKSPACE] Change all method such as PUT, DELETE, MOVE ... to POST
+client.interceptors.request.use(function (config) {
+	if(config.method) {
+		let method = config.method.toUpperCase();
+		// Change all request except POST GET HEAD to POST
+		if(method !== 'POST' && method !== 'GET' && method !== 'HEAD') {
+			config.headers['Target-Request-Method'] = method;
+			config.method = 'post';
+			console.log("Axios overide: ", config.headers);
+		}
+	}
+	return config;
+  }, function (error) {
+	return Promise.reject(error);
+});
 const cancelableClient: CancelableAxiosInstance = Object.assign(client, {
 	CancelToken: Axios.CancelToken,
 	isCancel: Axios.isCancel,
